@@ -17,11 +17,11 @@ public class CoolWeatherDB {
 	/**
 	 * 数据库名
 	 */
-	private static final String DB_NAME = "cool_weather";
+	public static final String DB_NAME = "cool_weather";
 	/**
-	 * 版本号
+	 * 数据库版本
 	 */
-	private static final int VERSIOM = 1;
+	public static final int VERSION = 1;
 	private static CoolWeatherDB coolWeatherDB;
 	private SQLiteDatabase db;
 
@@ -30,37 +30,34 @@ public class CoolWeatherDB {
 	 */
 	private CoolWeatherDB(Context context) {
 		CoolWeatherOpenHelper dbHelper = new CoolWeatherOpenHelper(context,
-				DB_NAME, null, VERSIOM);
+				DB_NAME, null, VERSION);
 		db = dbHelper.getWritableDatabase();
 	}
 
 	/**
-	 * 获取CoolweatherDB的实例
+	 * 获取CoolWeatherDB的实例。
 	 */
 	public synchronized static CoolWeatherDB getInstance(Context context) {
 		if (coolWeatherDB == null) {
 			coolWeatherDB = new CoolWeatherDB(context);
 		}
-
 		return coolWeatherDB;
-
 	}
 
 	/**
-	 * 将province实例存到数据库
+	 * 将Province实例存储到数据库。
 	 */
 	public void saveProvince(Province province) {
-		if (province == null) {
+		if (province != null) {
 			ContentValues values = new ContentValues();
 			values.put("province_name", province.getProvinceName());
 			values.put("province_code", province.getProvinceCode());
 			db.insert("Province", null, values);
-
 		}
 	}
 
 	/**
-	 * 从数据库读取全国所有省份的信息
+	 * 从数据库读取全国所有的省份信息。
 	 */
 	public List<Province> loadProvinces() {
 		List<Province> list = new ArrayList<Province>();
@@ -77,16 +74,14 @@ public class CoolWeatherDB {
 				list.add(province);
 			} while (cursor.moveToNext());
 		}
-
 		return list;
-
 	}
 
 	/**
-	 * 将city存入数据库
+	 * 将City实例存储到数据库。
 	 */
 	public void saveCity(City city) {
-		if (city == null) {
+		if (city != null) {
 			ContentValues values = new ContentValues();
 			values.put("city_name", city.getCityName());
 			values.put("city_code", city.getCityCode());
@@ -96,15 +91,14 @@ public class CoolWeatherDB {
 	}
 
 	/**
-	 * 从数据库中读取某省的城市信息
+	 * 从数据库读取某省下所有的城市信息。
 	 */
 	public List<City> loadCities(int provinceId) {
 		List<City> list = new ArrayList<City>();
-		Cursor cursor = db.query("City", null, "province_id=?",
+		Cursor cursor = db.query("City", null, "province_id = ?",
 				new String[] { String.valueOf(provinceId) }, null, null, null);
 		if (cursor.moveToFirst()) {
 			do {
-
 				City city = new City();
 				city.setId(cursor.getInt(cursor.getColumnIndex("id")));
 				city.setCityName(cursor.getString(cursor
@@ -116,14 +110,13 @@ public class CoolWeatherDB {
 			} while (cursor.moveToNext());
 		}
 		return list;
-
 	}
 
 	/**
-	 * 将county存入数据库
+	 * 将County实例存储到数据库。
 	 */
 	public void saveCounty(County county) {
-		if (county == null) {
+		if (county != null) {
 			ContentValues values = new ContentValues();
 			values.put("county_name", county.getCountyName());
 			values.put("county_code", county.getCountyCode());
@@ -137,19 +130,21 @@ public class CoolWeatherDB {
 	 */
 	public List<County> loadCounties(int cityId) {
 		List<County> list = new ArrayList<County>();
-		Cursor cursor = db.query("County", null, "city_id=?",
+		Cursor cursor = db.query("County", null, "city_id = ?",
 				new String[] { String.valueOf(cityId) }, null, null, null);
 		if (cursor.moveToFirst()) {
 			do {
-				County county=new County();
+				County county = new County();
 				county.setId(cursor.getInt(cursor.getColumnIndex("id")));
-				county.setCountyName(cursor.getString(cursor.getColumnIndex("county_name")));
-				county.setCountyCode(cursor.getString(cursor.getColumnIndex("county_code")));
+				county.setCountyName(cursor.getString(cursor
+						.getColumnIndex("county_name")));
+				county.setCountyCode(cursor.getString(cursor
+						.getColumnIndex("county_code")));
 				county.setCityId(cityId);
 				list.add(county);
 			} while (cursor.moveToNext());
 		}
 		return list;
-
 	}
+
 }
